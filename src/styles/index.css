@@ -5,6 +5,10 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+:root {
+    zoom: 1.2;
+}
+
 /* Custom utility for the grid background */
 .bg-grid-pattern {
     background-image: linear-gradient(to right, #27272a 1px, transparent 1px),
