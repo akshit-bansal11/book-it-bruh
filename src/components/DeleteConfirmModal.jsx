@@ -13,12 +13,12 @@ function DeleteConfirmModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             {/* Modal Content */}
-            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-md border border-zinc-800 bg-zinc-900 shadow-2xl shadow-black">
+            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-md border border-[var(--border-main)] bg-[var(--bg-card)] shadow-2xl shadow-black">
                 {/* Red Warning Strip */}
                 <div className="h-1 w-full bg-red-600" />
 
@@ -30,10 +30,10 @@ function DeleteConfirmModal({
                             </svg>
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-zinc-100 uppercase tracking-wide">
+                            <h3 className="text-sm font-bold text-[var(--text-main)] uppercase tracking-wide">
                                 {title}
                             </h3>
-                            <p className="mt-2 text-sm text-zinc-400">
+                            <p className="mt-2 text-sm text-[var(--text-muted)]">
                                 {description}
                             </p>
                         </div>
@@ -43,7 +43,7 @@ function DeleteConfirmModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded border border-zinc-700 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors"
+                            className="rounded border border-[var(--border-main)] bg-transparent px-4 py-2 text-xs font-semibold text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-colors"
                         >
                             CANCEL
                         </button>

@@ -6,6 +6,7 @@ import TagFilter from './components/TagFilter.jsx';
 import DeleteConfirmModal from './components/DeleteConfirmModal.jsx';
 import AuthPage from './components/AuthPage.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 
 // 🔥 Firestore imports
 import {
@@ -234,12 +235,12 @@ function AuthenticatedApp() {
   const clearTags = () => setActiveTags([]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-200 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex flex-col font-sans selection:bg-[var(--selection-bg)] selection:text-[var(--selection-text)] transition-colors duration-300">
       {/* Technical Grid Background */}
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
 
       <div className="relative flex-1 flex flex-col z-10">
-        <Header onLogout={logout} user={currentUser} />
+        <Header onLogout={logout} user={currentUser} bookmarks={bookmarks} />
         <div className="flex flex-1 overflow-hidden">
           <main className="flex-1 flex flex-col gap-6 p-6 overflow-hidden max-w-7xl mx-auto w-full">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -259,11 +260,11 @@ function AuthenticatedApp() {
               </div>
             </div>
 
-            <div className="h-px bg-zinc-800/50 w-full my-2" />
+            <div className="h-px bg-[var(--border-main)] w-full my-2 opacity-50" />
 
             {/* Optional tiny loading state */}
             {loading && (
-              <div className="text-[11px] text-zinc-500 mb-2">
+              <div className="text-[11px] text-[var(--text-muted)] mb-2">
                 Syncing bookmarks from the cloud…
               </div>
             )}
@@ -307,7 +308,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

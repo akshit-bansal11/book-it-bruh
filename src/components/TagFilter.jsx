@@ -13,14 +13,14 @@ function TagFilter({ tags, activeTags, onToggleTag, onClear, onEditTag, onDelete
     return (
         <div className="h-full">
             <div className="flex items-center justify-between mb-3">
-                <h2 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+                <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                     Filter Data
                 </h2>
                 <div className="flex gap-3">
                     <button
                         type="button"
                         onClick={() => setIsManageMode(!isManageMode)}
-                        className={`text-[10px] font-mono transition-colors ${isManageMode ? 'text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'
+                        className={`text-[10px] font-mono transition-colors ${isManageMode ? 'text-[var(--accent-main)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                             }`}
                     >
                         {isManageMode ? 'DONE' : 'MANAGE'}
@@ -29,7 +29,7 @@ function TagFilter({ tags, activeTags, onToggleTag, onClear, onEditTag, onDelete
                         type="button"
                         onClick={onClear}
                         disabled={activeTags.length === 0}
-                        className="text-[10px] font-mono text-indigo-400 hover:text-indigo-300 disabled:opacity-0 transition-opacity"
+                        className="text-[10px] font-mono text-[var(--accent-main)] hover:text-[var(--accent-hover)] disabled:opacity-0 transition-opacity"
                     >
                         RESET_ALL
                     </button>
@@ -37,8 +37,8 @@ function TagFilter({ tags, activeTags, onToggleTag, onClear, onEditTag, onDelete
             </div>
 
             {tags.length === 0 ? (
-                <div className="rounded border border-dashed border-zinc-800 p-4 text-center">
-                    <p className="text-xs text-zinc-600">No tags indexed.</p>
+                <div className="rounded border border-dashed border-[var(--border-main)] p-4 text-center">
+                    <p className="text-xs text-[var(--text-muted)]">No tags indexed.</p>
                 </div>
             ) : (
                 <div className="flex flex-wrap gap-2">
@@ -50,28 +50,28 @@ function TagFilter({ tags, activeTags, onToggleTag, onClear, onEditTag, onDelete
                                 onClick={() => !isManageMode && onToggleTag(tag)}
                                 className={`group flex items-center gap-2 px-2.5 py-1 rounded text-xs font-medium border transition-all ${!isManageMode ? 'cursor-pointer' : 'cursor-default'
                                     } ${isActive
-                                        ? 'bg-zinc-800 border-zinc-700 text-indigo-400'
-                                        : 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                                        ? 'bg-[var(--bg-hover)] border-[var(--border-main)] text-[var(--accent-main)]'
+                                        : 'bg-transparent border-[var(--border-main)] text-[var(--text-muted)] hover:border-[var(--accent-main)] hover:text-[var(--text-main)]'
                                     }`}
                             >
                                 <div className="flex items-center gap-1.5">
                                     <span
                                         className={`w-1.5 h-1.5 rounded-full transition-colors ${isActive
-                                            ? 'bg-indigo-500'
-                                            : 'bg-zinc-700 group-hover:bg-indigo-500'
+                                            ? 'bg-[var(--accent-main)]'
+                                            : 'bg-[var(--border-main)] group-hover:bg-[var(--accent-main)]'
                                             }`}
                                     />
                                     {tag}
                                 </div>
 
                                 {isManageMode && (
-                                    <div className="flex items-center gap-1 ml-1 pl-2 border-l border-zinc-500/50">
+                                    <div className="flex items-center gap-1 ml-1 pl-2 border-l border-[var(--border-main)]">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleEditClick(tag);
                                             }}
-                                            className="p-0.5 text-zinc-500 hover:text-indigo-400 transition-colors"
+                                            className="p-0.5 text-[var(--text-muted)] hover:text-[var(--accent-main)] transition-colors"
                                             title="Edit Tag"
                                         >
                                             <svg
@@ -95,7 +95,7 @@ function TagFilter({ tags, activeTags, onToggleTag, onClear, onEditTag, onDelete
                                                 e.stopPropagation();
                                                 onDeleteTag(tag);
                                             }}
-                                            className="p-0.5 text-zinc-500 hover:text-red-500 transition-colors"
+                                            className="p-0.5 text-[var(--text-muted)] hover:text-red-500 transition-colors"
                                             title="Delete Tag"
                                         >
                                             <svg

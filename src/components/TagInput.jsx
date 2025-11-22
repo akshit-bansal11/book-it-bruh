@@ -87,14 +87,14 @@ function TagInput({ value, onChange, tags = [], placeholder, className, autoFocu
                 autoComplete="off"
             />
             {showSuggestions && (
-                <ul className="absolute bottom-full mb-1 left-0 w-full max-h-48 overflow-y-auto rounded border border-zinc-700 bg-zinc-900 shadow-xl z-50 scrollbar-hide">
+                <ul className="absolute bottom-full mb-1 left-0 w-full max-h-48 overflow-y-auto rounded border border-[var(--border-main)] bg-[var(--bg-card)] shadow-xl z-50 scrollbar-hide">
                     {filteredTags.map((tag, index) => (
                         <li
                             key={tag}
                             onClick={() => addTag(tag)}
                             className={`px-3 py-2 text-xs cursor-pointer transition-colors ${index === focusedIndex
-                                    ? 'bg-zinc-800 text-indigo-400 font-medium'
-                                    : 'text-zinc-300 hover:bg-zinc-800'
+                                ? 'bg-[var(--bg-hover)] text-[var(--accent-main)] font-medium'
+                                : 'text-[var(--text-main)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             #{tag}
