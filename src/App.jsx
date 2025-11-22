@@ -4,7 +4,8 @@ import BookmarkForm from './components/BookmarkForm.jsx';
 import BookmarkGrid from './components/BookmarkGrid.jsx';
 import TagFilter from './components/TagFilter.jsx';
 import DeleteConfirmModal from './components/DeleteConfirmModal.jsx';
-import TagInput from './components/TagInput.jsx';
+import AuthPage from './components/AuthPage.jsx';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 
 // 🔥 Firestore imports
 import {
@@ -14,6 +15,8 @@ import {
   setDoc,
   deleteDoc,
   updateDoc,
+  query,
+  where
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -34,7 +37,9 @@ function getDomainFromUrl(url) {
   }
 }
 
-function App() {
+function AuthenticatedApp() {
+  const { currentUser, logout } = useAuth();
+
   // 🔁 Bookmarks now come from Firestore
   const [bookmarks, setBookmarks] = useState([]);
   const [activeTags, setActiveTags] = useState([]);
@@ -52,9 +57,12 @@ function App() {
 
   // 🔥 Subscribe to Firestore `bookmarks` collection in real-time
   useEffect(() => {
-    const colRef = collection(db, 'bookmarks');
+    if (!currentUser) return;
 
-    const unsubscribe = onSnapshot(colRef, (snapshot) => {
+    const colRef = collection(db, 'bookmarks');
+    const q = query(colRef, where("uid", "==", currentUser.uid));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map((d) => d.data());
 
       // Keep newest first like you were doing with [...prev]
@@ -65,10 +73,12 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [currentUser]);
 
   // 🔥 Add bookmark → write to Firestore
   const handleAddBookmark = async ({ url, tags, description }) => {
+    if (!currentUser) return;
+
     const normalizedUrl = normalizeUrl(url);
     if (!normalizedUrl) return;
 
@@ -89,6 +99,7 @@ function App() {
 
     const newBookmark = {
       id, // 👈 we use this as the Firestore doc id too
+      uid: currentUser.uid, // Link to user
       url: normalizedUrl,
       title: domain,
       faviconUrl,
@@ -228,7 +239,7 @@ function App() {
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
 
       <div className="relative flex-1 flex flex-col z-10">
-        <Header />
+        <Header onLogout={logout} user={currentUser} />
         <div className="flex flex-1 overflow-hidden">
           <main className="flex-1 flex flex-col gap-6 p-6 overflow-hidden max-w-7xl mx-auto w-full">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -285,6 +296,19 @@ function App() {
         description={`Are you sure you want to delete the tag "${tagToDelete}"? It will be removed from all bookmarks.`}
       />
     </div>
+  );
+}
+
+function AppContent() {
+  const { currentUser } = useAuth();
+  return currentUser ? <AuthenticatedApp /> : <AuthPage />;
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
