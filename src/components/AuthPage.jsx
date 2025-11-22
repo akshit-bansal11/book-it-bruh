@@ -39,9 +39,8 @@ export default function AuthPage() {
         try {
             await signInWithGoogle();
         } catch (err) {
-            console.error("Google Sign-In Error:", err);
-            // Show the full error message for debugging
-            setError(`Failed to sign in with Google: ${err.message} (${err.code || 'unknown code'})`);
+            console.error(err);
+            setError("Failed to sign in with Google");
         }
         setLoading(false);
     }

@@ -28,7 +28,6 @@ export const signInWithGoogle = async () => {
         return result.user;
     } catch (error) {
         console.error("Error signing in with Google:", error);
-        console.dir(error); // Log full object structure
         throw error; // Re-throw the error to allow calling components to handle it
     }
 };
