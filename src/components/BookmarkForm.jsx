@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import TagInput from './TagInput.jsx';
+import Toast from './Toast.jsx';
 
 function BookmarkForm({ onAddBookmark, allTags }) {
     const [url, setUrl] = useState('');
@@ -7,6 +8,9 @@ function BookmarkForm({ onAddBookmark, allTags }) {
     const [description, setDescription] = useState('');
     const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toast, setToast] = useState({ visible: false, message: '' });
+
+    const DESCRIPTION_LIMIT = 1000;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -17,11 +21,21 @@ function BookmarkForm({ onAddBookmark, allTags }) {
             setUrl('');
             setDescription('');
             setIsDescriptionOpen(false);
-            // Optional: Clear tags after submit? Users might want to add multiple similar ones. 
-            // Let's clear them to be clean.
             setTags('');
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleDescriptionChange = (e) => {
+        const val = e.target.value;
+        if (val.length <= DESCRIPTION_LIMIT) {
+            setDescription(val);
+        } else {
+            // Show toast if trying to exceed
+            if (!toast.visible) {
+                setToast({ visible: true, message: 'Description cannot exceed 1000 characters.' });
+            }
         }
     };
 
@@ -78,17 +92,22 @@ function BookmarkForm({ onAddBookmark, allTags }) {
                         <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
                             <div className="flex items-center justify-between">
                                 <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Description</label>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsDescriptionOpen(false)}
-                                    className="text-[10px] font-mono text-[var(--text-muted)] hover:text-[var(--text-main)]"
-                                >
-                                    CANCEL
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <span className={`text-[10px] font-mono ${DESCRIPTION_LIMIT - description.length < 50 ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
+                                        {DESCRIPTION_LIMIT - description.length} chars left
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsDescriptionOpen(false)}
+                                        className="text-[10px] font-mono text-[var(--text-muted)] hover:text-[var(--text-main)]"
+                                    >
+                                        CANCEL
+                                    </button>
+                                </div>
                             </div>
                             <textarea
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={handleDescriptionChange}
                                 placeholder="Add a note about this bookmark..."
                                 rows={2}
                                 className="w-full rounded bg-[var(--bg-main)] border border-[var(--border-main)] px-3 py-2.5 text-sm text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-main)] focus:ring-1 focus:ring-[var(--accent-main)] transition-all resize-none"
@@ -97,6 +116,12 @@ function BookmarkForm({ onAddBookmark, allTags }) {
                     )}
                 </div>
             </form>
+
+            <Toast
+                message={toast.message}
+                isVisible={toast.visible}
+                onClose={() => setToast({ ...toast, visible: false })}
+            />
         </div>
     );
 }

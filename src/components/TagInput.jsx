@@ -13,12 +13,38 @@ function TagInput({ value, onChange, tags = [], placeholder, className, autoFocu
     };
 
     const handleInputChange = (e) => {
-        const val = e.target.value;
-        onChange(val);
+        const rawValue = e.target.value;
 
-        const last = getLastTag(val);
+        // Split by comma to handle each tag individually
+        const parts = rawValue.split(',');
+        const processedParts = parts.map((part, index) => {
+            // We want to preserve the leading space if it exists (standard separator)
+            let content = part;
+            let prefix = '';
+
+            // If it's not the first tag, it might have a leading space.
+            if (index > 0 && content.startsWith(' ')) {
+                prefix = ' ';
+                content = content.substring(1);
+            }
+
+            // Replace spaces in the content with underscores
+            content = content.replace(/ /g, '_');
+
+            // Limit to 15 chars
+            if (content.length > 15) {
+                content = content.substring(0, 15);
+            }
+
+            return prefix + content.toLowerCase();
+        });
+
+        const newValue = processedParts.join(',');
+        onChange(newValue);
+
+        const last = getLastTag(newValue);
         // Get current full tags to avoid suggesting what's already there
-        const currentTags = val.split(',').map(t => t.trim().toLowerCase());
+        const currentTags = newValue.split(',').map(t => t.trim().toLowerCase());
 
         if (last.length > 0) {
             const matches = tags.filter(t =>
@@ -36,7 +62,7 @@ function TagInput({ value, onChange, tags = [], placeholder, className, autoFocu
     const addTag = (tag) => {
         const parts = value.split(',');
         parts.pop(); // Remove partial
-        parts.push(tag);
+        parts.push(tag.toLowerCase());
         // Reconstruct string with clean formatting
         const newValue = parts.join(', ') + ', ';
         onChange(newValue);

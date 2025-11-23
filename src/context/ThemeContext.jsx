@@ -13,6 +13,9 @@ export const THEMES = [
     { id: 'mint', name: 'Mint', color: '#0d9488' }, // Teal
     { id: 'berry', name: 'Berry', color: '#e11d48' }, // Rose Red
     { id: 'cyber', name: 'Cyber', color: '#00ff00' }, // Neon Green
+    { id: 'coffee', name: 'Coffee', color: '#8d6e63' }, // Brown
+    { id: 'ocean', name: 'Ocean', color: '#0ea5e9' }, // Sky Blue
+    { id: 'dracula', name: 'Dracula', color: '#ff79c6' }, // Pink
 ];
 
 export function ThemeProvider({ children }) {

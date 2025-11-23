@@ -4,6 +4,7 @@ import BookmarkForm from './BookmarkForm.jsx';
 import BookmarkGrid from './BookmarkGrid.jsx';
 import TagFilter from './TagFilter.jsx';
 import DeleteConfirmModal from './DeleteConfirmModal.jsx';
+import Toast from './Toast.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { db } from '../firebase';
 import { normalizeUrl, getDomainFromUrl } from '../utils';
@@ -32,6 +33,12 @@ function AuthenticatedApp() {
     // -- Tag Delete Modal State --
     const [isTagDeleteModalOpen, setIsTagDeleteModalOpen] = useState(false);
     const [tagToDelete, setTagToDelete] = useState(null);
+
+    // -- Add Bookmark Modal State --
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    // -- Toast State --
+    const [toast, setToast] = useState({ visible: false, message: '' });
 
     // Optional: loading state
     const [loading, setLoading] = useState(true);
@@ -62,6 +69,13 @@ function AuthenticatedApp() {
 
         const normalizedUrl = normalizeUrl(url);
         if (!normalizedUrl) return;
+
+        // Check for duplicates
+        const isDuplicate = bookmarks.some(b => b.url === normalizedUrl);
+        if (isDuplicate) {
+            setToast({ visible: true, message: 'This link has already been added.' });
+            return;
+        }
 
         const id =
             (window.crypto && crypto.randomUUID && crypto.randomUUID()) ||
@@ -95,7 +109,8 @@ function AuthenticatedApp() {
         // setDoc with custom ID so Firestore doc id === bookmark.id
         await setDoc(docRef, newBookmark);
 
-        // No need to manually update state, onSnapshot will fire
+        // Close modal after successful add
+        setIsAddModalOpen(false);
     };
 
     // Ask for delete (open modal)
@@ -224,10 +239,18 @@ function AuthenticatedApp() {
                 <div className="flex flex-1 overflow-hidden">
                     <main className="flex-1 flex flex-col gap-6 p-6 overflow-hidden max-w-7xl mx-auto w-full">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-                            <div className="flex-1">
-                                <BookmarkForm onAddBookmark={handleAddBookmark} allTags={allTags} />
+                            <div className="flex-1 flex justify-between items-center">
+                                <h1 className="text-xl font-bold tracking-tight">Bookmarks</h1>
+                                <button
+                                    onClick={() => setIsAddModalOpen(true)}
+                                    className="px-4 py-2 bg-[var(--text-main)] text-[var(--bg-main)] text-sm font-bold rounded hover:bg-[var(--accent-main)] hover:text-white transition-colors"
+                                >
+                                    + Add Bookmark
+                                </button>
                             </div>
+                        </div>
 
+                        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
                             <div className="w-full lg:w-72">
                                 <TagFilter
                                     tags={allTags}
@@ -238,28 +261,40 @@ function AuthenticatedApp() {
                                     onDeleteTag={handleDeleteTag}
                                 />
                             </div>
-                        </div>
 
-                        <div className="h-px bg-[var(--border-main)] w-full my-2 opacity-50" />
-
-                        {/* Optional tiny loading state */}
-                        {loading && (
-                            <div className="text-[11px] text-[var(--text-muted)] mb-2">
-                                Syncing bookmarks from the cloud…
+                            <div className="flex-1 overflow-y-auto pr-2">
+                                {/* Optional tiny loading state */}
+                                {loading && (
+                                    <div className="text-[11px] text-[var(--text-muted)] mb-2">
+                                        Syncing bookmarks from the cloud…
+                                    </div>
+                                )}
+                                <BookmarkGrid
+                                    bookmarks={filteredBookmarks}
+                                    onDelete={requestDelete}
+                                    onUpdate={handleUpdateBookmark}
+                                    allTags={allTags}
+                                />
                             </div>
-                        )}
-
-                        <div className="flex-1 overflow-y-auto pr-2">
-                            <BookmarkGrid
-                                bookmarks={filteredBookmarks}
-                                onDelete={requestDelete}
-                                onUpdate={handleUpdateBookmark}
-                                allTags={allTags}
-                            />
                         </div>
                     </main>
                 </div>
             </div>
+
+            {/* Add Bookmark Modal */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="w-full max-w-2xl relative">
+                        <button
+                            onClick={() => setIsAddModalOpen(false)}
+                            className="absolute -top-10 right-0 text-white/70 hover:text-white"
+                        >
+                            Close
+                        </button>
+                        <BookmarkForm onAddBookmark={handleAddBookmark} allTags={allTags} />
+                    </div>
+                </div>
+            )}
 
             <DeleteConfirmModal
                 isOpen={isDeleteModalOpen}
@@ -275,6 +310,12 @@ function AuthenticatedApp() {
                 onConfirm={confirmDeleteTag}
                 title="Delete Tag"
                 description={`Are you sure you want to delete the tag "${tagToDelete}"? It will be removed from all bookmarks.`}
+            />
+
+            <Toast
+                message={toast.message}
+                isVisible={toast.visible}
+                onClose={() => setToast({ ...toast, visible: false })}
             />
         </div>
     );
